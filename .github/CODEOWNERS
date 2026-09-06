@@ -1,0 +1,8 @@
+# Safety-critical paths need a maintainer's approval in addition to the regular review.
+# Branch protection enforces this with "Require review from Code Owners".
+/src/guard.ts              @purankuton2001
+/src/providers.ts          @purankuton2001
+/src/director.ts           @purankuton2001
+/src/youtube.ts            @purankuton2001
+/.github/CODEOWNERS        @purankuton2001
+/.github/workflows/        @purankuton2001

@@ -124,3 +124,7 @@ Implementation lives in `src/` (server and providers), `public/` (studio and ove
 ## License
 
 Code: **[MIT](LICENSE)**. Model services and generated media have separate terms; see [asset provenance](docs/ASSETS.md). Use characters and references you have permission to use. The app marks generated content as AI-generated.
+
+## Contributing
+
+Issues and PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Reviews count as much as PRs; anyone can do one.
