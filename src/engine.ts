@@ -114,11 +114,13 @@ export class Engine extends EventEmitter {
   rate(id:string,score:number){const j=this.jobs.find(j=>j.id===id&&j.clip);if(!j||!Number.isInteger(score)||score<1||score>5)throw new Error('Choose a clip and score from 1 to 5');j.rating=score;this.log('consistency_rating',{id,score,demo:j.clip!.demo});this.changed();}
   savePersona(input:Record<string,unknown>,create=false){
     this.ensureEditable();const p:Persona=create?{...structuredClone(this.store.persona()),id:randomUUID().slice(0,8),seed:randomInt(0,2147483647),refs:[],idle:[],voice:undefined,voiceId:undefined,confirmed:false,demo:true}:this.store.persona();
+    const previousVoiceDescription=p.voiceDescription,previousStyle=p.style;
     for(const key of ['name','fanName','appearance','world','tone','forbidden','systemPrompt','voiceDescription'] as const)if(key in input){const value=String(input[key]).trim().slice(0,2000);if(value)assertSafe(value,this.store.settings.blockedWords,key==='forbidden'?'generation':'comment');p[key]=value;}
     if('seed' in input){const n=Number(input.seed);if(input.seed===null||String(input.seed).trim()===''||!Number.isInteger(n)||n<0||n>2147483647)throw new Error('Seed must be an integer from 0 to 2147483647');p.seed=n;}
     if(!p.voiceDescription.trim())throw new Error('Voice description is required');
     if(!p.name)throw new Error('A name is required');
     if('style' in input){if(!['anime','photoreal'].includes(String(input.style)))throw new Error('Invalid style');if(p.style!==input.style){p.confirmed=false;p.idle=[];}p.style=input.style as Persona['style'];}
+    if(p.voiceDescription!==previousVoiceDescription||p.style!==previousStyle){p.voice=undefined;p.voiceId=undefined;}
     p.adult=true;this.store.savePersona(p);if(create)this.store.saveSettings({...this.store.settings,personaId:p.id});this.changed();return p;
   }
   select(id:string){this.ensureEditable();this.store.persona(id);this.store.saveSettings({...this.store.settings,personaId:id});this.changed();}

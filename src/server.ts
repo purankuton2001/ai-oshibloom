@@ -29,7 +29,7 @@ function file(req:http.IncomingMessage,res:http.ServerResponse,target:string){
 }
 async function body(req:http.IncomingMessage){let data='';for await(const chunk of req){data+=chunk;if(data.length>40000)throw new Error('Request too large');}const value=JSON.parse(data||'{}');if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('Expected JSON object');return value as Record<string,unknown>;}
 const server=http.createServer(async(req,res)=>{
-  res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');
+  res.setHeader('Content-Security-Policy',"frame-ancestors 'self'");res.setHeader('X-Frame-Options','SAMEORIGIN');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');
   const allowedHosts=[`127.0.0.1:${port}`,`localhost:${port}`];
   if(!allowedHosts.includes(req.headers.host||''))return json(res,{error:'Invalid host'},403);
   const origin=`http://${req.headers.host}`;

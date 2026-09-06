@@ -15,7 +15,9 @@ test('HTTP and WebSocket: isolated full mock creation and broadcast loop', {time
     await new Promise<void>((resolve,reject)=>{child.stdout.on('data',()=>resolve());child.stderr.on('data',d=>reject(new Error(String(d))));child.on('error',reject);child.on('exit',code=>{if(code)reject(new Error('Server failed'));});});
     const post=async(route:string,body:unknown)=>{const r=await fetch(base+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await r.json() as any;assert.equal(r.status,200,JSON.stringify(data));return data;};
     assert.equal((await fetch(base+'/health')).status,200);
-    assert.match(await (await fetch(base+'/')).text(),/Community chat/);
+    const page=await fetch(base+'/');assert.equal(page.headers.get('content-security-policy'),"frame-ancestors 'self'");assert.equal(page.headers.get('x-frame-options'),'SAMEORIGIN');
+    assert.match(await page.text(),/Community chat/);
+    assert.equal((await fetch(base+'/overlay?audio=1')).status,200);
     const image=await fetch(base+'/assets/yui-demo.png',{headers:{Range:'bytes=0-20'}});assert.equal(image.status,206);assert.equal((await image.arrayBuffer()).byteLength,21);
     assert.equal((await fetch(base+'/api/control',{method:'POST',headers:{Origin:'https://outside.example','Content-Type':'application/json'},body:'{}'})).status,403);
     assert.equal((await fetch(base+'/api/control',{method:'POST',body:'{}'})).status,415);

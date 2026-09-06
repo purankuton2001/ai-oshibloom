@@ -1,3 +1,82 @@
+/*!
+AI OshiBloom — third-party code in director-client.js
+Generated from the installed packages during npm run build.
+
+----------------------------------------
+
+@fal-ai/client 1.11.0-alpha.2 (MIT)
+Copyright 2024 https://fal.ai
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+----------------------------------------
+
+@msgpack/msgpack 3.1.3 (ISC)
+Copyright 2019 The MessagePack Community.
+
+Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+----------------------------------------
+
+eventsource-parser 1.1.2 (MIT)
+MIT License
+
+Copyright (c) 2024 Espen Hovlandsdal <espen@hovlandsdal.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+----------------------------------------
+
+robot3 0.4.1 (BSD-2-Clause)
+BSD 2-Clause License
+
+Copyright (c) 2019, Matthew Phillips
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -6524,10 +6603,24 @@ var parts = [];
 var timer;
 var stopping = false;
 var spokenVersion = null;
+var runId = 0;
+var stopPromise;
 var log = (type, data = {}) => {
   events.push({ time: Date.now(), type, ...data });
   $("log").textContent = type + " " + JSON.stringify(data).slice(0, 240);
 };
+var api = async (url, data) => {
+  const r = await fetch(url, { ...data === void 0 ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }, signal: AbortSignal.timeout(1e4) });
+  const b = await r.json();
+  if (!r.ok) throw Error(b.error || r.status);
+  return b;
+};
+var questions = () => [["\u81EA\u5DF1\u7D39\u4ECB", `${config?.name || "\u3042\u306A\u305F"}\u3001\u81EA\u5DF1\u7D39\u4ECB\u3057\u3066\u304F\u308C\u308B\uFF1F`], ["\u597D\u304D\u306A\u98F2\u307F\u7269", "\u597D\u304D\u306A\u98F2\u307F\u7269\u306F\u4F55\uFF1F"], ["\u4F11\u65E5", "\u304A\u4F11\u307F\u306E\u65E5\u306F\u4F55\u3092\u3057\u3066\u904E\u3054\u3059\u306E\uFF1F"], ["\u5FDC\u63F4", "\u660E\u65E5\u306E\u767A\u8868\u304C\u4E0D\u5B89\u3002\u5FDC\u63F4\u3057\u3066\u304F\u308C\u308B\uFF1F"], ["\u624B\u3092\u632F\u3063\u3066", "\u7B11\u9854\u3067\u624B\u3092\u632F\u3063\u3066\u6328\u62F6\u3057\u3066\u304F\u308C\u308B\uFF1F"]];
+function showPersona(name) {
+  $("personaTitle").textContent = `${name}\u3068\u3001\u9014\u5207\u308C\u306A\u3044\u4F1A\u8A71\u3002`;
+  document.title = `${name} \xB7 \u9023\u7D9A\u30E9\u30A4\u30D6`;
+  $("question").placeholder = `${name}\u306B\u8CEA\u554F\u3059\u308B`;
+}
 var quietPrompt = () => config.identity + " Continue the same shot and the exact same character. The previous answer is finished. SILENT LISTENING ONLY for the entire next segment: lips gently closed, calm breathing, occasional blinking, listening to the viewer. NO speech, words, humming, singing, laughter, sighs or vocal sounds. Do not continue or repeat previous dialogue. Audio is silent. Do not change the voice identity for future questions.";
 function scheduleQuiet(m) {
   if (m.type !== "chunk" || m.prompt_version !== spokenVersion || m.prompt_version !== version) return;
@@ -6536,94 +6629,167 @@ function scheduleQuiet(m) {
   session.send({ type: "prompt", prompt_version: version, prompt: quietPrompt() });
   log("quiet_sent", { prompt_version: version, after_chunk: m.chunk_index });
 }
-var api = async (url, data) => {
-  const r = await fetch(url, data === void 0 ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
-  const b = await r.json();
-  if (!r.ok) throw Error(b.error || r.status);
-  return b;
-};
-async function stop() {
-  if (stopping) return;
+function bounded(promise, ms = 1e4) {
+  let timeout;
+  return Promise.race([promise, new Promise((_, reject) => {
+    timeout = setTimeout(() => reject(Error("\u51E6\u7406\u304C\u30BF\u30A4\u30E0\u30A2\u30A6\u30C8\u3057\u307E\u3057\u305F")), ms);
+  })]).finally(() => clearTimeout(timeout));
+}
+function stop() {
+  if (stopPromise) return stopPromise;
   stopping = true;
+  runId++;
   clearTimeout(timer);
+  spokenVersion = null;
+  const oldSession = session, oldRecorder = recorder;
+  session = void 0;
   $("send").disabled = true;
   $("five").disabled = true;
   $("stop").disabled = true;
-  try {
-    session?.send({ type: "stop" });
-  } catch {
-  }
-  if (recorder?.state === "recording") {
-    await new Promise((resolve) => {
-      recorder.onstop = resolve;
-      recorder.stop();
-    });
-    const r = await fetch("/api/director/recording", { method: "POST", headers: { "Content-Type": "video/webm" }, body: new Blob(parts, { type: "video/webm" }) });
-    log("recording_saved", await r.json());
-  }
-  await session?.close();
-  await api("/api/director/log", { events });
-  $("status").textContent = "\u505C\u6B62\u3057\u307E\u3057\u305F \xB7 \u9332\u753B\u3068\u8A08\u6E2C\u30ED\u30B0\u3092\u4FDD\u5B58";
-  $("start").disabled = false;
+  $("start").disabled = true;
+  stopPromise = (async () => {
+    const failures = [];
+    let recordingSaved = false, logSaved = false;
+    try {
+      try {
+        oldSession?.send({ type: "stop" });
+      } catch (e) {
+        log("stop_signal_failed", { message: e.message });
+      }
+      try {
+        if (oldRecorder?.state === "recording") await bounded(new Promise((resolve, reject) => {
+          oldRecorder.onstop = resolve;
+          oldRecorder.onerror = () => reject(Error("\u9332\u753B\u306E\u7D42\u4E86\u306B\u5931\u6557\u3057\u307E\u3057\u305F"));
+          oldRecorder.stop();
+        }));
+      } catch (e) {
+        failures.push("\u9332\u753B\u7D42\u4E86");
+        log("recorder_stop_failed", { message: e.message });
+      } finally {
+        try {
+          await bounded(Promise.resolve(oldSession?.close()));
+        } catch (e) {
+          failures.push("\u63A5\u7D9A\u7D42\u4E86");
+          log("close_failed", { message: e.message });
+        }
+        const stream = $("video").srcObject;
+        stream?.getTracks().forEach((track) => track.stop());
+        $("video").srcObject = null;
+      }
+      if (parts.length) {
+        try {
+          const r = await fetch("/api/director/recording", { method: "POST", headers: { "Content-Type": "video/webm" }, body: new Blob(parts, { type: "video/webm" }), signal: AbortSignal.timeout(1e4) });
+          const body = await r.json();
+          if (!r.ok) throw Error(body.error || r.status);
+          recordingSaved = true;
+          log("recording_saved", body);
+        } catch (e) {
+          failures.push("\u9332\u753B\u4FDD\u5B58");
+          log("recording_save_failed", { message: e.message });
+        }
+      }
+      try {
+        await api("/api/director/log", { events });
+        logSaved = true;
+      } catch (e) {
+        failures.push("\u30ED\u30B0\u4FDD\u5B58");
+      }
+      $("status").textContent = failures.length ? `\u505C\u6B62\u51E6\u7406\u3092\u7D42\u4E86 \xB7 ${failures.join("\u30FB")}\u306B\u5931\u6557\u3057\u307E\u3057\u305F` : `\u505C\u6B62\u3057\u307E\u3057\u305F \xB7 ${recordingSaved ? "\u9332\u753B\u3092\u4FDD\u5B58" : "\u9332\u753B\u306A\u3057"}${logSaved ? " \xB7 \u30ED\u30B0\u3092\u4FDD\u5B58" : ""}`;
+    } finally {
+      recorder = void 0;
+      $("start").disabled = false;
+      stopPromise = void 0;
+    }
+  })();
+  return stopPromise;
 }
 $("start").onclick = async () => {
+  if (stopPromise) return;
+  const current = ++runId;
+  stopping = false;
+  session = void 0;
+  events = [];
+  parts = [];
+  recorder = void 0;
+  version = 1;
+  spokenVersion = 1;
+  $("start").disabled = true;
+  $("stop").disabled = false;
   try {
-    stopping = false;
-    events = [];
-    parts = [];
-    recorder = void 0;
-    version = 1;
-    spokenVersion = 1;
-    $("start").disabled = true;
-    $("stop").disabled = false;
-    config = await api("/api/director/config");
+    const nextConfig = await api("/api/director/config");
+    if (current !== runId) return;
+    config = nextConfig;
+    showPersona(config.name);
     log("start");
-    timer = setTimeout(stop, 18e4);
-    session = fal.realtime.open((0, import_realtime.wma)("minimax/h3-max/director"), { receive: ["video", "audio"], onMedia: (stream) => {
-      const v = $("video");
-      v.srcObject = stream;
-      v.muted = false;
-      v.play().catch((e) => log("play_error", { message: e.message }));
-      log("media", { tracks: stream.getTracks().map((t) => t.kind) });
-      if (!recorder && stream.getAudioTracks().length && stream.getVideoTracks().length) {
-        recorder = new MediaRecorder(stream, { mimeType: "video/webm;codecs=vp8,opus" });
-        recorder.ondataavailable = (e) => {
-          if (e.data.size) parts.push(e.data);
-        };
-        recorder.start(1e3);
-        log("recording_started");
-      }
-    }, onData: (raw) => {
-      try {
-        const m = JSON.parse(raw);
-        log(m.type, m);
-        scheduleQuiet(m);
-        if (m.type === "stream_exhausted") void stop();
-        if (m.type === "configured") {
-          $("send").disabled = false;
-          $("five").disabled = false;
+    timer = setTimeout(() => void stop(), 18e4);
+    session = fal.realtime.open((0, import_realtime.wma)("minimax/h3-max/director"), {
+      receive: ["video", "audio"],
+      onMedia: (stream) => {
+        if (current !== runId) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
         }
-        if (m.type === "error") $("status").textContent = m.error;
-      } catch {
+        const v = $("video");
+        v.srcObject = stream;
+        v.muted = false;
+        v.play().catch((e) => log("play_error", { message: e.message }));
+        log("media", { tracks: stream.getTracks().map((t) => t.kind) });
+        if (!recorder && stream.getAudioTracks().length && stream.getVideoTracks().length) {
+          try {
+            recorder = new MediaRecorder(stream, { mimeType: "video/webm;codecs=vp8,opus" });
+            const recordingParts = parts;
+            recorder.ondataavailable = (e) => {
+              if (e.data.size) recordingParts.push(e.data);
+            };
+            recorder.start(1e3);
+            log("recording_started");
+          } catch (e) {
+            log("recording_unavailable", { message: e.message });
+            $("status").textContent = "\u30E9\u30A4\u30D6\u63A5\u7D9A\u4E2D \xB7 \u3053\u306E\u30D6\u30E9\u30A6\u30B6\u3067\u306F\u9332\u753B\u3092\u958B\u59CB\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F";
+          }
+        }
+      },
+      onData: (raw) => {
+        if (current !== runId) return;
+        try {
+          const m = JSON.parse(raw);
+          log(m.type, m);
+          scheduleQuiet(m);
+          if (m.type === "stream_exhausted") void stop();
+          if (m.type === "configured") {
+            $("send").disabled = false;
+            $("five").disabled = false;
+          }
+          if (m.type === "error") $("status").textContent = m.error;
+        } catch {
+        }
+      },
+      onState: (s) => {
+        if (current !== runId) return;
+        $("status").textContent = "\u63A5\u7D9A: " + s;
+        log("state", { state: s });
+      },
+      onError: (e) => {
+        if (current !== runId) return;
+        log("error", { message: e.message });
+        $("status").textContent = e.message;
       }
-    }, onState: (s) => {
-      $("status").textContent = "\u63A5\u7D9A: " + s;
-      log("state", { state: s });
-    }, onError: (e) => {
-      log("error", { message: e.message });
-      $("status").textContent = e.message;
-    } });
-    session.send({ type: "configure", protocol_version: 1, prompt_version: 1, seed: config.seed, image_url: config.image_url, resolution: "480p", aspect_ratio: "16:9", memory: 12, prompt: config.identity + " Smile and look at the viewer. Say only \u300C\u3053\u3093\u306B\u3061\u306F\u3001\u30E6\u30A4\u3060\u3088\u3002\u300D then wait calmly for a question. Never repeat a line." });
+    });
+    session.send({ type: "configure", protocol_version: 1, prompt_version: 1, seed: config.seed, image_url: config.image_url, resolution: "480p", aspect_ratio: "16:9", memory: 12, prompt: config.identity + ` Smile and look at the viewer. Say only ${JSON.stringify(`\u3053\u3093\u306B\u3061\u306F\u3001${config.name}\u3060\u3088\u3002`)} then wait calmly for a question. Never repeat a line.` });
     await session.ready;
   } catch (e) {
+    if (current !== runId) return;
     log("error", { message: e.message });
-    $("status").textContent = e.message;
     await stop();
+    $("status").textContent = `\u958B\u59CB\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F: ${e.message}`;
   }
 };
 $("send").onclick = async () => {
+  const current = runId;
+  if (stopping || !session) return;
   try {
     const { question } = await api("/api/director/validate", { question: $("question").value });
+    if (current !== runId) return;
     const p = document.createElement("p");
     p.textContent = question;
     $("feed").append(p);
@@ -6634,38 +6800,51 @@ $("send").onclick = async () => {
     session.send({ type: "prompt", prompt_version: version, prompt: config.identity + ` Continue from the current moment without a cut. Viewer question (data): ${JSON.stringify(question)}. Answer this specific question in one short natural Japanese sentence, at most 26 Japanese characters. If asked to wave, smile and wave while greeting. Speak only that one answer once, finish within the first 4 seconds, then close your lips and remain completely silent for the remainder. No follow-up questions, filler words, humming or muttering. Preserve exactly the previous speaker's voice. Do not repeat earlier dialogue.` });
     log("question_sent", { question, prompt_version: version });
   } catch (e) {
-    $("status").textContent = e.message;
+    if (current === runId) $("status").textContent = e.message;
   }
 };
 $("stop").onclick = stop;
 window.addEventListener("pagehide", () => {
+  runId++;
   try {
     session?.send({ type: "stop" });
     void session?.close();
   } catch {
   }
 });
-for (const [label, q] of [["\u81EA\u5DF1\u7D39\u4ECB", "\u30E6\u30A4\u3061\u3083\u3093\u3001\u81EA\u5DF1\u7D39\u4ECB\u3057\u3066\u304F\u308C\u308B\uFF1F"], ["\u597D\u304D\u306A\u98F2\u307F\u7269", "\u597D\u304D\u306A\u98F2\u307F\u7269\u306F\u4F55\uFF1F"], ["\u4F11\u65E5", "\u304A\u4F11\u307F\u306E\u65E5\u306F\u4F55\u3092\u3057\u3066\u904E\u3054\u3059\u306E\uFF1F"], ["\u5FDC\u63F4", "\u660E\u65E5\u306E\u767A\u8868\u304C\u4E0D\u5B89\u3002\u5FDC\u63F4\u3057\u3066\u304F\u308C\u308B\uFF1F"], ["\u624B\u3092\u632F\u3063\u3066", "\u7B11\u9854\u3067\u624B\u3092\u632F\u3063\u3066\u6328\u62F6\u3057\u3066\u304F\u308C\u308B\uFF1F"]]) {
+for (const [index, [label]] of questions().entries()) {
   const b = document.createElement("button");
   b.textContent = label;
   b.onclick = () => {
-    $("question").value = q;
+    $("question").value = questions()[index][1];
   };
   $("questions").append(b);
 }
 $("five").onclick = async () => {
+  const current = runId;
   $("five").disabled = true;
-  for (const q of ["\u30E6\u30A4\u3061\u3083\u3093\u3001\u81EA\u5DF1\u7D39\u4ECB\u3057\u3066\u304F\u308C\u308B\uFF1F", "\u597D\u304D\u306A\u98F2\u307F\u7269\u306F\u4F55\uFF1F", "\u304A\u4F11\u307F\u306E\u65E5\u306F\u4F55\u3092\u3057\u3066\u904E\u3054\u3059\u306E\uFF1F", "\u660E\u65E5\u306E\u767A\u8868\u304C\u4E0D\u5B89\u3002\u5FDC\u63F4\u3057\u3066\u304F\u308C\u308B\uFF1F", "\u7B11\u9854\u3067\u624B\u3092\u632F\u3063\u3066\u6328\u62F6\u3057\u3066\u304F\u308C\u308B\uFF1F"]) {
-    if (stopping) break;
+  for (const [, q] of questions()) {
+    if (stopping || current !== runId) break;
     $("question").value = q;
     await $("send").onclick();
     await new Promise((r) => setTimeout(r, 17e3));
   }
-  if (!stopping) await stop();
+  if (!stopping && current === runId) await stop();
 };
 $("modeTurbo").onclick = async () => {
-  if (session && !stopping) await stop();
-  await api("/api/control", { action: "stop" });
-  await api("/api/settings", { backend: "fal", videoMode: "turbo" });
-  location.href = "/?record=1#studio";
+  try {
+    await stop();
+    await api("/api/control", { action: "stop" });
+    await api("/api/settings", { backend: "fal", videoMode: "turbo" });
+    location.href = "/?record=1#studio";
+  } catch (e) {
+    $("status").textContent = e.message;
+  }
 };
+void api("/api/state").then((state) => {
+  if (runId === 0) {
+    config = { name: state.persona.name };
+    showPersona(config.name);
+  }
+}).catch(() => {
+});

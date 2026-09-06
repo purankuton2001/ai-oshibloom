@@ -117,13 +117,15 @@ npm test
 npm run build
 ```
 
-The current 18-test suite covers queueing, cancellation, spending reservations, playback acknowledgement, provider payloads, and local HTTP/WebSocket behavior. Model quality is evaluated separately through live recordings.
+The current 23-test suite covers queueing, cancellation, spending reservations, playback acknowledgement, provider payloads, and local HTTP/WebSocket behavior, Director failure recovery, and character/voice updates. Model quality is evaluated separately through live recordings.
 
 Implementation lives in `src/` (server and providers), `public/` (studio and overlay), and `client/` (continuous-stream client). For a custom local generation backend, see the experimental [ComfyUI adapter](local/README.md).
 
 ## License
 
 Code: **[MIT](LICENSE)**. Model services and generated media have separate terms; see [asset provenance](docs/ASSETS.md). Use characters and references you have permission to use. The app marks generated content as AI-generated.
+
+Bundled dependencies: [third-party notices](public/THIRD_PARTY_NOTICES.txt).
 
 ## Contributing
 

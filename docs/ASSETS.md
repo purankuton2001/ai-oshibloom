@@ -12,7 +12,7 @@ The app uses this same sample for all demo face candidates and references and la
 
 `docs/media/studio.png`, `comment-reaction.gif`, and `comment-reaction.mp4` show an actual local application test. The question is a synthetic test comment. The GIF is an 8 fps, scaled version of the sound-bearing operation recording; it preserves the recorded waiting time. The source recording combines continuous browser screenshots with the generated clip's native audio aligned to observed playback time. It is not operating-system audio capture.
 
-This test character used a maintainer-provided illustration and generated scene references, distinct from the bundled free-demo illustration. The public character-creation UI does not currently import that reference or recreate the test configuration in one click. No API keys, runtime persona folders or provider account configuration are included with these documentation media.
+This test character used a maintainer-provided illustration, described by the maintainer as AI-generated, and generated scene references, distinct from the bundled free-demo illustration. The maintainer elected to retain these demo media. Independent clearance of the reference and its derivatives has not been established; this is not a representation that third-party rights have been cleared. The public character-creation UI does not currently import that reference or recreate the test configuration in one click. No API keys, runtime persona folders or provider account configuration are included with these documentation media.
 
 The MIT code license should not be read as a grant of rights in model services, third-party references or all generated media. Their applicable permissions and provider terms are separate.
 

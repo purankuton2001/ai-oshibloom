@@ -17,7 +17,7 @@ Artifacts remain in `data/personas/b76f1964/`. The Clip library contains the rea
 
 ## Recorded browser-driven anime test
 
-Following the user's request, the initial anime image was reselected. The attached PNG and the in-app generated reference have identical decoded pixel MD5 (`870eef86d20440bf0fc97996366f6160`); no new personal photograph was introduced. The user expressly chose that original character for this test.
+Following the user's request, the initial anime image was reselected. The attached PNG and the in-app generated reference have identical decoded pixel MD5 (`870eef86d20440bf0fc97996366f6160`); no new personal photograph was introduced. The user chose that AI-generated reference for this test; independent originality and rights clearance were not established.
 
 Two reference views and one idle clip were generated. A continuous timestamped capture of the actual studio browser then recorded the Start button, text entry, Send button, generation wait, visible response and return to idle. The recording is made from 100 real browser captures at their original timestamps, encoded at 30 fps with duplicated frames. It is not sped up and contains no fabricated UI states. The studio preview is muted, so the screen recording is silent.
 

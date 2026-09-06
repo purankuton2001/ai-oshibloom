@@ -35,7 +35,7 @@ In **My idol / わたしの推し**, save an original adult character's appearan
 
 ## Voice options
 
-A fixed seed and the exact voice description are saved per character. The three generation paths differ:
+A fixed seed and the exact voice description are saved per character. Changing the voice description or visual style clears the saved reference voice and voice ID; generate the reference again to apply the new description. Existing generated clips are unchanged. The three generation paths differ:
 
 - **H3 Max Turbo:** native generated speech; saved voice description and seed, no reference audio. Reactions start from an idle-video frame when available, keeping their aspect ratio aligned.
 - **H3 Max reference-to-video:** selectable under video settings; can include the saved synthetic reference audio. Voice samples must meet the provider's duration constraints. The voice-creation action uses voice design for an anime character without a saved voice ID, otherwise a saved/preset voice ID.
@@ -51,7 +51,7 @@ For **comment reactions**, add this OBS Browser Source at 1920×1080:
 http://127.0.0.1:8790/overlay?audio=1
 ```
 
-The output shows the same character and reactions as the studio. OBS and the browser can have different audio policies; verify your mix before broadcasting. Full production broadcasts have not been validated.
+The studio’s Copy OBS link action includes `audio=1`. The output shows the same character and reactions as the studio. OBS and the browser can have different audio policies; verify your mix before broadcasting. Full production broadcasts have not been validated.
 
 YouTube Live chat polling requires `YOUTUBE_API_KEY`, an already-live YouTube video ID, and the YouTube chat source selected in settings. Starting the studio does not start a YouTube broadcast. The poller respects the API's requested interval and has a conservative process-local quota estimate.
 

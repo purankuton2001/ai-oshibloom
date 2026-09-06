@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node --import tsx src/server.ts",
     "dev": "tsx watch src/server.ts",
-    "build": "esbuild client/director.js --bundle --format=esm --outfile=public/director-client.js && tsc",
+    "build": "node scripts/build-client.mjs && tsc",
     "start:prod": "node dist/src/server.js",
     "test": "node --import tsx --test test/*.test.ts",
     "probe": "tsx src/probe.ts"

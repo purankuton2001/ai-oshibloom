@@ -139,3 +139,16 @@ test('reply visibility waits for a real playback acknowledgement, which is idemp
   e.started('unrelated');assert.equal(j.playbackStartedAt,undefined);e.started(j.id);assert.ok(j.playbackStartedAt);const first=j.playbackStartedAt;e.started(j.id);assert.equal(j.playbackStartedAt,first);
  }finally{e.close();fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('editing voice description invalidates reference voice only when it changes',()=>{
+  const {root,store}=context();const engine=new Engine(store);
+  try{
+    const p=store.persona();p.voice='/media/personas/yui/voice/old.mp3';p.voiceId='old-designed-voice';store.savePersona(p);
+    engine.savePersona({name:'Nova',voiceDescription:p.voiceDescription});
+    assert.equal(store.persona().voiceId,'old-designed-voice');
+    engine.savePersona({voiceDescription:'Original adult female, warm lower speaking voice.'});
+    assert.equal(store.persona().voiceId,undefined);assert.equal(store.persona().voice,undefined);
+    const next=store.persona();next.voiceId='new-voice';next.voice='/media/new.mp3';store.savePersona(next);
+    engine.savePersona({style:'photoreal'});assert.equal(store.persona().voiceId,undefined);
+  }finally{engine.close();fs.rmSync(root,{recursive:true,force:true});}
+});
