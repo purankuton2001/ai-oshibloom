@@ -24,6 +24,10 @@ AI OshiBloom gives your character a stage—and your comments a part in the perf
 
 For creators who want to make their own AI VTuber, and developers exploring what an audience can do inside generated video.
 
+Built for creators who already have an original character (starting with creators who work in Japanese) and for the fans who watch from abroad in English, Korean or another language: one idol, a global chat, your own original character only. Photoreal or anime, your call. The [Conjure Board](https://purankuton2001.github.io/conjure-board/) shows, per idol, how much of the audience reacted in a language other than the creator's.
+
+AI OshiBloom is one of two apps built from the same requirements document by two models; the other is [castconjure](https://github.com/purankuton2001/castconjure) (clips, by Claude Fable 5.1). Neither is a demo of the other. Compare them on the Board.
+
 **Early preview.** The studio code is open source. Real generation uses **paid fal APIs**; model weights and cloud inference are not included. You can explore the controls without a key.
 
 ## Your character. Your chat. Their next scene.

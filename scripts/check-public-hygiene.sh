@@ -19,7 +19,8 @@ PERSONAL_EMAIL_RE='@(gmail|googlemail|yahoo|hotmail|outlook|live|icloud|me|proto
 # Words and links that must not appear in commit messages or tracked files:
 # tool session links and tracking trailers, the project's former working name,
 # the private ops repository, personal account names, working-log phrasing.
-FORBIDDEN_RE='claude\.ai/code/session|Claude-Session:|castconjure|same-spec|purankutonacount|the user explicitly|the user'"'"'s request|following the user'"'"'s'
+# (The sibling app castconjure is public since 2026-09-07 and may be named.)
+FORBIDDEN_RE='claude\.ai/code/session|Claude-Session:|same-spec|purankutonacount|the user explicitly|the user'"'"'s request|following the user'"'"'s'
 
 # Credential shapes. Add new providers here when you add an integration.
 SECRET_RE='sk-[A-Za-z0-9_-]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}|xox[abp]-[A-Za-z0-9-]{10,}|-----BEGIN [A-Z ]*PRIVATE KEY|[A-Za-z0-9_]*(SECRET|TOKEN|PASSWORD|API_KEY)[A-Za-z0-9_]*\s*[:=]\s*["'"'"'][A-Za-z0-9_/+=-]{16,}'
