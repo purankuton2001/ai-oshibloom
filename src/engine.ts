@@ -1,10 +1,11 @@
 import { randomUUID, randomInt } from 'node:crypto';
 import { EventEmitter } from 'node:events';
-import { defaults, fallback, settingsFrom, type Clip, type Comment, type Job, type Persona } from './domain.js';
+import { defaults, fallback, language, settingsFrom, type Clip, type Comment, type Job, type Persona } from './domain.js';
 import { assertSafe, guard } from './guard.js';
 import { capability, prices, Providers, videoCost } from './providers.js';
 import { Store } from './store.js';
 import { YouTubeChat } from './youtube.js';
+const LANG_CODE={English:'en',Japanese:'ja',Korean:'ko',Spanish:'es'} as const;
 
 export class Engine extends EventEmitter {
   running=false; paused=false; busy=''; spent=0; chatStatus='Disconnected';
@@ -95,10 +96,12 @@ export class Engine extends EventEmitter {
       }
       assertSafe(job.reply||' ',s.blockedWords);
       const clipCost=videoCost(s,p);job.cost+=clipCost;this.charge(clipCost);this.changed();
+      const lang=LANG_CODE[language(job.reply||job.text)];
+      this.log('gen_start',{job:job.id,id:job.id,backend:s.backend,lang,estimateUsd:clipCost});
       const clip=await this.providers.video(p,job.text,job.reply||'',s,false,signal);
       if(signal.aborted||!this.running)throw new Error('Cancelled');
       job.clip=clip;job.status='ready';job.latency=Date.now()-job.receivedAt;this.stats.generated++;
-      this.log('clip_ready',{id:job.id,backend:s.backend,latencyMs:job.latency,costEstimateUsd:job.cost,demo:clip.demo});
+      this.log('clip_ready',{id:job.id,backend:s.backend,lang,latencyMs:job.latency,costEstimateUsd:job.cost,demo:clip.demo});
       this.playReady();
     }catch(e){if(!signal.aborted){job.status='failed';job.error=(e as Error).message;this.stats.failed++;this.log('generation_failed',{id:job.id,error:job.error});}if(!this.jobs.some(j=>j.status==='playing'))this.emit('visual',{type:'idle'});}
     finally{this.generation=false;this.changed();void this.pump();}
