@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Blocks commit messages and author emails that must not reach the public repository.
+# Enabled by `npm ci` (git config core.hooksPath .githooks).
+exec "$(git rev-parse --show-toplevel)/scripts/check-public-hygiene.sh" --commit-msg "$1"

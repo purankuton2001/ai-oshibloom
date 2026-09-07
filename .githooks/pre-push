@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Full hygiene check (all commits from HEAD, all tracked files) before anything leaves the machine.
+# Enabled by `npm ci` (git config core.hooksPath .githooks).
+exec "$(git rev-parse --show-toplevel)/scripts/check-public-hygiene.sh"

@@ -18,9 +18,12 @@ cp .env.example .env     # demo mode, no keys needed for the studio
 npm run build            # bundles the director client and type-checks
 npm start                # http://127.0.0.1:8790
 npm test                 # queue, cancellation, cost reservation, provider inputs, HTTP/WebSocket
+npm run hygiene          # public-repo check: commit emails, messages, secrets, private names
 ```
 
 Real generation needs a fal key and costs money; see [docs/SETUP.md](docs/SETUP.md). Keep `.env` out of version control.
+
+`npm ci` also enables the git hooks in `.githooks/`, which run the hygiene check on every commit message and before every push. Commit with your GitHub noreply email (`git config user.email '<id>+<login>@users.noreply.github.com'`); this repository is public and history is not rewritten to remove mistakes. The full rules are in [CLAUDE.md](CLAUDE.md).
 
 ## Pull requests
 
@@ -28,6 +31,7 @@ Real generation needs a fal key and costs money; see [docs/SETUP.md](docs/SETUP.
 - Add or update a test in `test/` when you touch the guard, the engine or provider inputs.
 - Don't add anything that lets a real person's face or voice, or an existing character, into the pipeline. That rule is what keeps this project shippable.
 - English in code and docs; Japanese and Korean are welcome in studio strings and translations.
+- Commit messages describe the change and carry no tool session links or tracking trailers (`Co-Authored-By` is fine). `npm run hygiene` must pass; CI runs it too.
 
 ## Reviewing
 
