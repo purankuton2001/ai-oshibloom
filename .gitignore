@@ -7,3 +7,6 @@ data/
 .env.*
 !.env.example
 *.log
+
+# user-specific ComfyUI workflow export (see local/README.md)
+local/workflow.json
